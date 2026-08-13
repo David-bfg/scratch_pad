@@ -104,7 +104,7 @@
   
   services.home-assistant = {
     enable = true;
-    configDir = "/home/dbg/services/home-assistant";
+    # configDir = "/home/dbg/services/home-assistant";
     package = (pkgs.home-assistant.override {
       extraPackages = py: with py; [ psycopg2 ];
     }).overrideAttrs (oldAttrs: {
