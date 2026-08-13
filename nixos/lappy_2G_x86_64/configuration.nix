@@ -58,11 +58,14 @@
   # Users
   ############################################################
 
-  users.users.dbg = {
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-    ];
+  users.users = {
+    dbg = {
+      isNormalUser = true;
+      extraGroups = [
+        "wheel"
+      ];
+    };
+    hass.extraGroups = [ "dialout" ];
   };
 
   ############################################################
@@ -105,12 +108,44 @@
   services.home-assistant = {
     enable = true;
     # configDir = "/home/dbg/services/home-assistant";
-    package = (pkgs.home-assistant.override {
-      extraPackages = py: with py; [ psycopg2 ];
-    }).overrideAttrs (oldAttrs: {
-      doInstallCheck = false;
-    });
-    config.recorder.db_url = "postgresql://@/hass";
+    extraComponents = [
+      "esphome"
+      "met"
+      "radio_browser"
+      "isal"
+      "usb"
+      "zha"
+    ];
+    customComponents = [
+      pkgs.home-assistant-custom-components.adaptive_lighting
+    ];
+    extraPackages = py: with py; [
+      psycopg2
+      go2rtc-client
+      gtts
+    ];
+
+    config = {
+      recorder.db_url = "postgresql://@/hass";
+      adaptive_lighting = [
+        {
+          name = "adapt-flux";
+          lights = [
+            "light.sengled_e11_n1ea_light"
+            "light.sengled_e11_n1ea_e6ab0600_level_light_color_on_off"
+            "light.sengled_e11_n1ea_4c490300_level_light_color_on_off"
+            "light.osram_lightify_a19_rgbw_84a60700_level_light_color_on_off"
+          ];
+          prefer_rgb_color = false;
+          interval = 150;
+          min_color_temp = 1000;
+          sleep_brightness = 1;
+          sleep_rgb_or_color_temp = "rgb_color";
+          sleep_rgb_color = [ 255 0 0 ];
+          min_sunset_time = "18:00:00";
+        }
+      ];
+    };
   };
 
   ############################################################
