@@ -127,6 +127,9 @@
 
     config = {
       recorder.db_url = "postgresql://@/hass";
+      "automation ui" = "!include automations.yaml";
+      "scene ui" = "!include scenes.yaml";
+      "script ui" = "!include scripts.yaml";
       adaptive_lighting = [
         {
           name = "adapt-flux";
@@ -146,6 +149,14 @@
         }
       ];
     };
+  };
+
+  systemd = {
+    tmpfiles.rules = [ # create files if they do not exist
+      "f ${config.services.home-assistant.configDir}/automations.yaml 0644 hass hass"
+      "f ${config.services.home-assistant.configDir}/scenes.yaml 0644 hass hass"
+      "f ${config.services.home-assistant.configDir}/scripts.yaml 0644 hass hass"
+    ];
   };
 
   ############################################################
